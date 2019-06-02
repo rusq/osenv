@@ -3,6 +3,7 @@ package osenv
 import (
 	"os"
 	"testing"
+	"time"
 )
 
 func TestEnvString(t *testing.T) {
@@ -63,6 +64,42 @@ func TestEnvBool(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotVal := Bool(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
 				t.Errorf("EnvBool() = %v, want %v", gotVal, tt.wantVal)
+			}
+		})
+	}
+}
+
+func TestDuration(t *testing.T) {
+	var testVals = map[string]string{
+		"TEST1H":         "1h",
+		"TEST35S":        "35s",
+		"TESTDURINVALID": "some value",
+	}
+
+	for k, v := range testVals {
+		if err := os.Setenv(k, v); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	type args struct {
+		key     string
+		defavlt time.Duration
+	}
+	tests := []struct {
+		name string
+		args args
+		want time.Duration
+	}{
+		{"default", args{"N$T_HERE", time.Duration(5 * time.Second)}, time.Duration(5 * time.Second)},
+		{"1h", args{"TEST1H", 42 * time.Hour}, 1 * time.Hour},
+		{"35s", args{"TEST35S", 42 * time.Hour}, 35 * time.Second},
+		{"invalid", args{"TESTDURINVALID", 42 * time.Hour}, 42 * time.Hour},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Duration(tt.args.key, tt.args.defavlt); got != tt.want {
+				t.Errorf("Duration() = %v, want %v", got, tt.want)
 			}
 		})
 	}

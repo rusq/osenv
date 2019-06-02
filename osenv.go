@@ -9,6 +9,7 @@ package osenv
 import (
 	"os"
 	"strconv"
+	"time"
 )
 
 // String returns the environment value as a string.
@@ -36,6 +37,11 @@ func Int64(key string, defavlt int64) int64 {
 // Float returns float64 value from the environment
 func Float(key string, defavlt float64) float64 {
 	return envValue(key, defavlt).(float64)
+}
+
+// Duration returns time.Duration value from the environment
+func Duration(key string, defavlt time.Duration) time.Duration {
+	return envValue(key, defavlt).(time.Duration)
 }
 
 func envValue(key string, defval interface{}) interface{} {
@@ -66,6 +72,11 @@ func envValue(key string, defval interface{}) interface{} {
 		}
 	case float64:
 		r, err := strconv.ParseFloat(val, 64)
+		if err == nil {
+			return r
+		}
+	case time.Duration:
+		r, err := time.ParseDuration(val)
 		if err == nil {
 			return r
 		}
