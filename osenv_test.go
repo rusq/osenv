@@ -104,3 +104,18 @@ func TestDuration(t *testing.T) {
 		})
 	}
 }
+
+func TestSecret(t *testing.T) {
+	const varName = "TEST_SECRET"
+	const sTest = "blah"
+	os.Setenv(varName, sTest)
+	v := Secret(varName, "fail")
+	if v != sTest {
+		t.Errorf("Secret() failed want=%s got=%s", sTest, v)
+	}
+	clearedV := os.Getenv(varName)
+	if clearedV != "" {
+		t.Errorf("value not cleared: %s", clearedV)
+	}
+
+}

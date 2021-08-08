@@ -44,6 +44,12 @@ func Duration(key string, defavlt time.Duration) time.Duration {
 	return envValue(key, defavlt).(time.Duration)
 }
 
+func Secret(key string, defavlt string) string {
+	v := envValue(key, defavlt).(string)
+	os.Unsetenv(key)
+	return v
+}
+
 func envValue(key string, defval interface{}) interface{} {
 	val, ok := os.LookupEnv(key)
 	if !ok {
