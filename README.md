@@ -97,5 +97,5 @@ function in "To":
 | osenv.Time     | osenv.Value |
 | osenv.String   | osenv.Value |
 
-[1]: https://pkg.go.dev/github.com/rusq/osenv
+[1]: https://pkg.go.dev/github.com/rusq/osenv/v2
 [2]: https://go.dev/blog/intro-generics
