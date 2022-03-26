@@ -1,6 +1,7 @@
 package osenv
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -156,4 +157,46 @@ func TestSecret(t *testing.T) {
 	if clearedV != "" {
 		t.Errorf("value not cleared: %s", clearedV)
 	}
+}
+
+func ExampleMain() {
+	fmt.Printf("OSENV_BOOL: %v\n"+
+		"OSENV_DURATION: %s\n"+
+		"OSENV_FLOAT: %.7f\n"+
+		"OSENV_INT: %d\n"+
+		"OSENV_INT64: %d\n"+
+		"OSENV_STRING: %s\n"+
+		"OSENV_TIME: %s\n",
+
+		Value("OSENV_BOOL", true),
+		Value("OSENV_DURATION", 60*time.Second),
+		Value("OSENV_FLOAT", 3.1415926),
+		Value("OSENV_INT", 42),
+		Value("OSENV_INT64", 64),
+		Value("OSENV_STRING", "default string value"),
+		Value("OSENV_TIME", time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC)),
+	)
+	// Output:
+	// OSENV_BOOL: true
+	// OSENV_DURATION: 1m0s
+	// OSENV_FLOAT: 3.1415926
+	// OSENV_INT: 42
+	// OSENV_INT64: 64
+	// OSENV_STRING: default string value
+	// OSENV_TIME: 2020-12-31 23:59:59 +0000 UTC
+}
+
+func ExampleSecret() {
+	os.Setenv("SECRET_VALUE", "hidden fact")
+
+	fmt.Printf("os.Getenv before: %q\n", os.Getenv("SECRET_VALUE"))
+
+	aSecret := Secret("SECRET_VALUE", "xxx")
+	fmt.Printf("aSecret variable contains: %q\n", aSecret)
+
+	fmt.Printf("os.Getenv after: %q\n", os.Getenv("SECRET_VALUE"))
+	// Output:
+	// os.Getenv before: "hidden fact"
+	// aSecret variable contains: "hidden fact"
+	// os.Getenv after: ""
 }
