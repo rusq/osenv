@@ -12,7 +12,17 @@ import (
 	"time"
 )
 
-func Value[T int | int64 | string | float64 | time.Duration | bool](key string, defavlt T) T {
+// SupportedTypes is the type constraint interface, that lists all currently
+// supported environment variable types.
+type SupportedTypes interface {
+	bool | float64 | int | int64 | string | time.Duration | time.Time
+}
+
+// TimeFormat specifies the supported time format for Time values.  The default
+// value is RFC3339 time format.
+var TimeFormat = time.RFC3339
+
+func Value[T SupportedTypes](key string, defavlt T) T {
 	v := envValue(key, defavlt)
 	return v.(T)
 }
@@ -20,7 +30,7 @@ func Value[T int | int64 | string | float64 | time.Duration | bool](key string, 
 // Secret returns the value of the environment variable with the name `key`.  If
 // the environment variable with name KEY not found, it returns the `defavlt` value.
 // The environment variable is unset after the value is retrieved.
-func Secret[T int | int64 | string | float64 | time.Duration | bool](key string, defavlt T) T {
+func Secret[T SupportedTypes](key string, defavlt T) T {
 	v := Value(key, defavlt)
 	os.Unsetenv(key)
 	return v
@@ -59,6 +69,11 @@ func envValue(key string, defval interface{}) interface{} {
 		}
 	case time.Duration:
 		r, err := time.ParseDuration(val)
+		if err == nil {
+			return r
+		}
+	case time.Time:
+		r, err := time.Parse(TimeFormat, val)
 		if err == nil {
 			return r
 		}

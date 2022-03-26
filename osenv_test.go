@@ -19,7 +19,7 @@ func TestEnvString(t *testing.T) {
 		args    args
 		wantVal string
 	}{
-		{"default", args{"MOCKBA", "Moscow"}, "Moscow"},
+		{"default", args{"BRISBANE", "Brisbane"}, "Brisbane"},
 		{"existing", args{"TESTENVSTRING", "someval"}, "go test"},
 	}
 	for _, tt := range tests {
@@ -105,6 +105,45 @@ func TestDuration(t *testing.T) {
 	}
 }
 
+func TestTime(t *testing.T) {
+	var testVals = map[string]string{
+		"TESTTIME":        "2021-03-26T13:47:34Z",
+		"INVALIDTIME":     "xxxx-xx-xx",
+		"UNSUPPORTEDTIME": "2021-03-26 13:47:34Z",
+	}
+
+	var defDate = time.Date(2019, 9, 16, 5, 6, 7, 0, time.UTC)
+
+	for k, v := range testVals {
+		if err := os.Setenv(k, v); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	type args struct {
+		key     string
+		defavlt time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want time.Time
+	}{
+		{"default", args{"N$T_HERE", defDate}, defDate},
+		{"empty default", args{"N$T_HERE", time.Time{}}, time.Time{}},
+		{"test time is set", args{"TESTTIME", defDate}, time.Date(2021, 03, 26, 13, 47, 34, 0, time.UTC)},
+		{"invalid format", args{"INVALIDTIME", defDate}, defDate},
+		{"invalid format", args{"UNSUPPORTEDTIME", defDate}, defDate},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Value(tt.args.key, tt.args.defavlt); got != tt.want {
+				t.Errorf("Duration() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestSecret(t *testing.T) {
 	const varName = "TEST_SECRET"
 	const sTest = "blah"
@@ -117,5 +156,4 @@ func TestSecret(t *testing.T) {
 	if clearedV != "" {
 		t.Errorf("value not cleared: %s", clearedV)
 	}
-
 }
