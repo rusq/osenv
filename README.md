@@ -8,15 +8,17 @@ case the environment variable is missing.
 
 There are two versions of the package:
 
-- v1: supports Go versions prior to 1.18 (this branch).
+- v1: supports Go versions 1.12+ (this version)*
 - v2: uses generics, therefore can only be compiled with Go 1.18+
 
-To use v1:
+\* v1 most likely will run on any version of go, but I only used it with 1.12+.
+
+Go 1.12+ (v1):
 ```go
 import "github.com/rusq/osenv"
 ```
 
-To use v2:
+Go 1.18+ (v1):
 ```go
 import "github.com/rusq/osenv/v2"
 ```
@@ -41,7 +43,7 @@ func main() {
 
 		osenv.Bool("OSENV_BOOL", true),
 		osenv.Duration("OSENV_DURATION", 60*time.Second),
-		osenv.Float("OSENV_FLOAT", 3.1415926),
+		osenv.Float("OSENV_FLOAT", 3.1415927),
 		osenv.Int("OSENV_INT", 42),
 		osenv.Int64("OSENV_INT64", 64),
 		osenv.String("OSENV_STRING", "default string value"),
