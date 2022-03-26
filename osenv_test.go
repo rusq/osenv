@@ -160,7 +160,7 @@ func TestSecret(t *testing.T) {
 	}
 }
 
-func ExampleMain() {
+func ExampleValue() {
 	fmt.Printf("OSENV_BOOL: %v\n"+
 		"OSENV_DURATION: %s\n"+
 		"OSENV_FLOAT: %.7f\n"+
