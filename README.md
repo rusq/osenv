@@ -2,16 +2,18 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/rusq/osenv.svg)][1]
 
-This package aims to provide extension of the `os.Getenv` that supports
-different types of variable types, and allows to specify a default value, in
-case the environment variable is missing.
+This package aims to provide extension of the `os.Getenv` that
+supports different types of variable types, and allows to specify a
+default value, in case the environment variable is missing.
 
-This version is implemented with [Go 1.18+ generics][2].  If you need to
-use the package's functionailty in Go versions prior to 1.18, see below.
+This version is implemented with [Go 1.18+ generics][2].  If you need
+to use the package's functionailty in Go versions prior to 1.18, see
+below.
 
 There are two versions of the package:
 
-- v2: uses generics, therefore can only be compiled with Go 1.18+ (this version).
+- v2: uses generics, therefore can only be compiled with Go 1.18+
+  (this version).
 - v1: supports Go versions 1.12+.
 
 Go 1.18+ (v2):
@@ -59,7 +61,8 @@ func main() {
 
 For more examples, refer to [package documentation][1]
 
-The package defines a single function that handles all supported types:
+The package defines a single function that handles all supported
+types:
 
 - Boolean
 - time.Duration 
@@ -72,9 +75,27 @@ The package defines a single function that handles all supported types:
 
 For all of these types, call `osenv.Value(...)`.
 
-\* Secret obtains a string from the environment (`osenv.Secret`).  The only difference
-between `Value` and `Secret`, is that Secret unsets the environment variable after
-getting the value.
+\* Secret obtains a string from the environment (`osenv.Secret`).  The
+only difference between `Value` and `Secret`, is that Secret unsets
+the environment variable after getting the value.
+
+## Upgrading from v1 to v2
+
+If you were using osenv/v1 before, and upgrading to osenv/v2, follow
+the instructions in this section.
+
+Replace the call to the function in "From" with the call to the
+function in "To":
+
+| From           | To          |
+|----------------|-------------|
+| osenv.Bool     | osenv.Value |
+| osenv.Duration | osenv.Value |
+| osenv.Float    | osenv.Value |
+| osenv.Int      | osenv.Value |
+| osenv.Int64    | osenv.Value |
+| osenv.Time     | osenv.Value |
+| osenv.String   | osenv.Value |
 
 [1]: https://pkg.go.dev/github.com/rusq/osenv
 [2]: https://go.dev/blog/intro-generics
