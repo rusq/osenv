@@ -2,6 +2,7 @@ package osenv
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"testing"
 	"time"
@@ -170,18 +171,18 @@ func ExampleMain() {
 
 		Value("OSENV_BOOL", true),
 		Value("OSENV_DURATION", 60*time.Second),
-		Value("OSENV_FLOAT", 3.1415926),
-		Value("OSENV_INT", 42),
-		Value("OSENV_INT64", 64),
+		Value("OSENV_FLOAT", math.Pi),
+		Value("OSENV_INT", math.MaxInt32),
+		Value("OSENV_INT64", math.MaxInt64),
 		Value("OSENV_STRING", "default string value"),
 		Value("OSENV_TIME", time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC)),
 	)
 	// Output:
 	// OSENV_BOOL: true
 	// OSENV_DURATION: 1m0s
-	// OSENV_FLOAT: 3.1415926
-	// OSENV_INT: 42
-	// OSENV_INT64: 64
+	// OSENV_FLOAT: 3.1415927
+	// OSENV_INT: 2147483647
+	// OSENV_INT64: 9223372036854775807
 	// OSENV_STRING: default string value
 	// OSENV_TIME: 2020-12-31 23:59:59 +0000 UTC
 }

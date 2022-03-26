@@ -6,28 +6,35 @@ This package aims to provide extension of the `os.Getenv` that supports
 different types of variable types, and allows to specify a default value, in
 case the environment variable is missing.
 
+This version is implemented with [Go 1.18+ generics][2].  If you need to
+use the package's functionailty in Go versions prior to 1.18, see below.
+
 There are two versions of the package:
 
-- v1: supports Go versions prior to 1.18 (this branch).
-- v2: uses generics, therefore can only be compiled with Go 1.18+
+- v2: uses generics, therefore can only be compiled with Go 1.18+ (this version).
+- v1: supports Go versions 1.12+.
 
-To use v1:
-```go
-import "github.com/rusq/osenv"
-```
-
-To use v2:
+Go 1.18+ (v2):
 ```go
 import "github.com/rusq/osenv/v2"
+```
+
+Go 1.12+ (v1):
+```go
+import "github.com/rusq/osenv"
 ```
 
 ## Usage
 
 ```go
-import (
-    "fmt"
+package main
 
-    "github.com/rusq/osenv"
+import (
+	"fmt"
+	"math"
+	"time"
+
+	"github.com/rusq/osenv/v2"
 )
 
 func main() {
@@ -39,20 +46,20 @@ func main() {
 		"OSENV_STRING: %s\n"+
 		"OSENV_TIME: %s\n",
 
-		osenv.Bool("OSENV_BOOL", true),
-		osenv.Duration("OSENV_DURATION", 60*time.Second),
-		osenv.Float("OSENV_FLOAT", 3.1415926),
-		osenv.Int("OSENV_INT", 42),
-		osenv.Int64("OSENV_INT64", 64),
-		osenv.String("OSENV_STRING", "default string value"),
-		osenv.Time("OSENV_TIME", time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC)),
+		osenv.Value("OSENV_BOOL", true),
+		osenv.Value("OSENV_DURATION", 60*time.Second),
+		osenv.Value("OSENV_FLOAT", math.Pi),
+		osenv.Value("OSENV_INT", math.MaxInt32),
+		osenv.Value("OSENV_INT64", math.MaxInt64),
+		osenv.Value("OSENV_STRING", "default string value"),
+		osenv.Value("OSENV_TIME", time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC)),
 	)
 }
 ```
 
 For more examples, refer to [package documentation][1]
 
-The package defines a set of functions, each for the respective supported type:
+The package defines a single function that handles all supported types:
 
 - Boolean
 - time.Duration 
@@ -63,8 +70,11 @@ The package defines a set of functions, each for the respective supported type:
 - Secret*
 - Time
 
+For all of these types, call `osenv.Value(...)`.
+
 \* Secret obtains a string from the environment (`osenv.Secret`).  The only difference
-between `String` and `Secret`, is that Secret unsets the environment variable after
+between `Value` and `Secret`, is that Secret unsets the environment variable after
 getting the value.
 
 [1]: https://pkg.go.dev/github.com/rusq/osenv
+[2]: https://go.dev/blog/intro-generics
