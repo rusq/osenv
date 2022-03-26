@@ -1,6 +1,7 @@
 package osenv
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -19,7 +20,7 @@ func TestEnvString(t *testing.T) {
 		args    args
 		wantVal string
 	}{
-		{"default", args{"MOCKBA", "Moscow"}, "Moscow"},
+		{"default", args{"BRISBANE", "Brisbane"}, "Brisbane"},
 		{"existing", args{"TESTENVSTRING", "someval"}, "go test"},
 	}
 	for _, tt := range tests {
@@ -105,6 +106,45 @@ func TestDuration(t *testing.T) {
 	}
 }
 
+func TestTime(t *testing.T) {
+	var testVals = map[string]string{
+		"TESTTIME":        "2021-03-26T13:47:34Z",
+		"INVALIDTIME":     "xxxx-xx-xx",
+		"UNSUPPORTEDTIME": "2021-03-26 13:47:34Z",
+	}
+
+	var defDate = time.Date(2019, 9, 16, 5, 6, 7, 0, time.UTC)
+
+	for k, v := range testVals {
+		if err := os.Setenv(k, v); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	type args struct {
+		key     string
+		defavlt time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want time.Time
+	}{
+		{"default", args{"N$T_HERE", defDate}, defDate},
+		{"empty default", args{"N$T_HERE", time.Time{}}, time.Time{}},
+		{"test time is set", args{"TESTTIME", defDate}, time.Date(2021, 03, 26, 13, 47, 34, 0, time.UTC)},
+		{"invalid format", args{"INVALIDTIME", defDate}, defDate},
+		{"invalid format", args{"UNSUPPORTEDTIME", defDate}, defDate},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Time(tt.args.key, tt.args.defavlt); got != tt.want {
+				t.Errorf("Duration() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestSecret(t *testing.T) {
 	const varName = "TEST_SECRET"
 	const sTest = "blah"
@@ -118,4 +158,46 @@ func TestSecret(t *testing.T) {
 		t.Errorf("value not cleared: %s", clearedV)
 	}
 
+}
+
+func ExampleMain() {
+	fmt.Printf("OSENV_BOOL: %v\n"+
+		"OSENV_DURATION: %s\n"+
+		"OSENV_FLOAT: %.7f\n"+
+		"OSENV_INT: %d\n"+
+		"OSENV_INT64: %d\n"+
+		"OSENV_STRING: %s\n"+
+		"OSENV_TIME: %s\n",
+
+		Bool("OSENV_BOOL", true),
+		Duration("OSENV_DURATION", 60*time.Second),
+		Float("OSENV_FLOAT", 3.1415926),
+		Int("OSENV_INT", 42),
+		Int64("OSENV_INT64", 64),
+		String("OSENV_STRING", "default string value"),
+		Time("OSENV_TIME", time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC)),
+	)
+	// Output:
+	// OSENV_BOOL: true
+	// OSENV_DURATION: 1m0s
+	// OSENV_FLOAT: 3.1415926
+	// OSENV_INT: 42
+	// OSENV_INT64: 64
+	// OSENV_STRING: default string value
+	// OSENV_TIME: 2020-12-31 23:59:59 +0000 UTC
+}
+
+func ExampleSecret() {
+	os.Setenv("SECRET_VALUE", "hidden fact")
+
+	fmt.Printf("os.Getenv before: %q\n", os.Getenv("SECRET_VALUE"))
+
+	aSecret := Secret("SECRET_VALUE", "xxx")
+	fmt.Printf("aSecret variable contains: %q\n", aSecret)
+
+	fmt.Printf("os.Getenv after: %q\n", os.Getenv("SECRET_VALUE"))
+	// Output:
+	// os.Getenv before: "hidden fact"
+	// aSecret variable contains: "hidden fact"
+	// os.Getenv after: ""
 }
