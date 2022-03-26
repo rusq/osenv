@@ -24,7 +24,7 @@ func TestEnvString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotVal := String(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
+			if gotVal := Value(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
 				t.Errorf("EnvString() = %v, want %v", gotVal, tt.wantVal)
 			}
 		})
@@ -62,7 +62,7 @@ func TestEnvBool(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotVal := Bool(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
+			if gotVal := Value(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
 				t.Errorf("EnvBool() = %v, want %v", gotVal, tt.wantVal)
 			}
 		})
@@ -98,7 +98,7 @@ func TestDuration(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Duration(tt.args.key, tt.args.defavlt); got != tt.want {
+			if got := Value(tt.args.key, tt.args.defavlt); got != tt.want {
 				t.Errorf("Duration() = %v, want %v", got, tt.want)
 			}
 		})

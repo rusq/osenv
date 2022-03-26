@@ -12,40 +12,16 @@ import (
 	"time"
 )
 
-// String returns the environment value as a string.
-// If environment variable with such a `key` is not
-// present, `defval` is returned instead.
-func String(key, defavlt string) string {
-	return envValue(key, defavlt).(string)
+func Value[T int | int64 | string | float64 | time.Duration | bool](key string, defavlt T) T {
+	v := envValue(key, defavlt)
+	return v.(T)
 }
 
-// Bool returns the environment value as bool
-func Bool(key string, defavlt bool) bool {
-	return envValue(key, defavlt).(bool)
-}
-
-// Int returns an integer value from the environment
-func Int(key string, defavlt int) int {
-	return envValue(key, defavlt).(int)
-}
-
-// Int64 returns an int64 value from the environment
-func Int64(key string, defavlt int64) int64 {
-	return envValue(key, defavlt).(int64)
-}
-
-// Float returns float64 value from the environment
-func Float(key string, defavlt float64) float64 {
-	return envValue(key, defavlt).(float64)
-}
-
-// Duration returns time.Duration value from the environment
-func Duration(key string, defavlt time.Duration) time.Duration {
-	return envValue(key, defavlt).(time.Duration)
-}
-
-func Secret(key string, defavlt string) string {
-	v := envValue(key, defavlt).(string)
+// Secret returns the value of the environment variable with the name `key`.  If
+// the environment variable with name KEY not found, it returns the `defavlt` value.
+// The environment variable is unset after the value is retrieved.
+func Secret[T int | int64 | string | float64 | time.Duration | bool](key string, defavlt T) T {
+	v := Value(key, defavlt)
 	os.Unsetenv(key)
 	return v
 }
