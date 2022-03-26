@@ -1,3 +1,3 @@
-module github.com/rusq/osenv
+module github.com/rusq/osenv/v2
 
-go 1.12
+go 1.18

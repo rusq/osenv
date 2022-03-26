@@ -2,6 +2,7 @@ package osenv
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"testing"
 	"time"
@@ -25,7 +26,7 @@ func TestEnvString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotVal := String(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
+			if gotVal := Value(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
 				t.Errorf("EnvString() = %v, want %v", gotVal, tt.wantVal)
 			}
 		})
@@ -63,7 +64,7 @@ func TestEnvBool(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotVal := Bool(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
+			if gotVal := Value(tt.args.key, tt.args.defval); gotVal != tt.wantVal {
 				t.Errorf("EnvBool() = %v, want %v", gotVal, tt.wantVal)
 			}
 		})
@@ -99,7 +100,7 @@ func TestDuration(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Duration(tt.args.key, tt.args.defavlt); got != tt.want {
+			if got := Value(tt.args.key, tt.args.defavlt); got != tt.want {
 				t.Errorf("Duration() = %v, want %v", got, tt.want)
 			}
 		})
@@ -138,7 +139,7 @@ func TestTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Time(tt.args.key, tt.args.defavlt); got != tt.want {
+			if got := Value(tt.args.key, tt.args.defavlt); got != tt.want {
 				t.Errorf("Duration() = %v, want %v", got, tt.want)
 			}
 		})
@@ -157,7 +158,6 @@ func TestSecret(t *testing.T) {
 	if clearedV != "" {
 		t.Errorf("value not cleared: %s", clearedV)
 	}
-
 }
 
 func ExampleMain() {
@@ -169,20 +169,20 @@ func ExampleMain() {
 		"OSENV_STRING: %s\n"+
 		"OSENV_TIME: %s\n",
 
-		Bool("OSENV_BOOL", true),
-		Duration("OSENV_DURATION", 60*time.Second),
-		Float("OSENV_FLOAT", 3.1415926),
-		Int("OSENV_INT", 42),
-		Int64("OSENV_INT64", 64),
-		String("OSENV_STRING", "default string value"),
-		Time("OSENV_TIME", time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC)),
+		Value("OSENV_BOOL", true),
+		Value("OSENV_DURATION", 60*time.Second),
+		Value("OSENV_FLOAT", math.Pi),
+		Value("OSENV_INT", math.MaxInt32),
+		Value("OSENV_INT64", math.MaxInt64),
+		Value("OSENV_STRING", "default string value"),
+		Value("OSENV_TIME", time.Date(2020, 12, 31, 23, 59, 59, 0, time.UTC)),
 	)
 	// Output:
 	// OSENV_BOOL: true
 	// OSENV_DURATION: 1m0s
-	// OSENV_FLOAT: 3.1415926
-	// OSENV_INT: 42
-	// OSENV_INT64: 64
+	// OSENV_FLOAT: 3.1415927
+	// OSENV_INT: 2147483647
+	// OSENV_INT64: 9223372036854775807
 	// OSENV_STRING: default string value
 	// OSENV_TIME: 2020-12-31 23:59:59 +0000 UTC
 }
